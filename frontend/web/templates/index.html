@@ -5,26 +5,37 @@
     <div class="row" style="padding: 3%;">
         <h1>Tecnologías Chapinas S.A.</h1>
     </div>
+
+    {% if message %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+
     <div class="row">
         <div class="col" style="padding: 3%;">
-            <h3>Enviar mensaje de
-                configuración</h3>
-            <form method="POST" action="{% url 'crear_producto' %}">
+            <h3>Subir configuración</h3>
+            <form method="POST" action="{% url 'index' %}"
+                enctype="multipart/form-data">
+                {% csrf_token %}
                 <input class="form-control" type="file" id="configuracion"
-                    type="file" name="file"
+                    type="file" name="configuracion_file"
                     accept=".xml">
                 <button type="submit"
                     class="btn btn-primary" style="margin: 2%;">Enviar</button>
             </form>
         </div>
         <div class="col" style="padding: 3%;">
-            <h3>Enviar mensaje de
-                consumo</h3>
-            <input class="form-control" type="file" id="consumo"
-                type="file" name="file"
-                accept=".xml">
-            <button type="submit"
-                class="btn btn-primary" style="margin: 2%;">Enviar</button>
+            <h3>Subir consumo</h3>
+            <form method="POST" action="{% url 'index' %}"
+                enctype="multipart/form-data">
+                {% csrf_token %}
+                <input class="form-control" type="file" id="consumo"
+                    type="file" name="consumo_file"
+                    accept=".xml">
+                <button type="submit"
+                    class="btn btn-primary" style="margin: 2%;">Enviar</button>
+            </form>
         </div>
     </div>
 </div>
