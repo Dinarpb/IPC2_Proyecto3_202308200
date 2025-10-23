@@ -2,6 +2,7 @@
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.contrib import messages  # Importar mensajes
 import requests
 
 API_URL = "http://localhost:3000/"
@@ -21,7 +22,7 @@ def index(request):
 
         elif "consumo_file" in request.FILES:
             file = request.FILES["consumo_file"]
-            endpoint = "consumo" 
+            endpoint = "consumo"
             message_type = "consumo"
 
         if file and endpoint:
@@ -40,8 +41,7 @@ def index(request):
                             f"{data.get('nuevas_categorias', 0)} nueva(s) categoría(s) creada(s)"
                         )
                     elif message_type == "consumo":
-                        message = f"{data.get('nuevos_consumos', 0)} nuevos consumos procesados."
-
+                        message = f"{data.get('nuevos_consumos', 0)} nuevos consumos registrados."
                 else:
                     message = (
                         f"Error del backend: {response.status_code} - {response.text}"
@@ -54,3 +54,69 @@ def index(request):
             message = "No se seleccionó un archivo válido."
 
     return render(request, "index.html", {"message": message})
+
+
+# --- NUEVAS VISTAS PARA OPERACIONES DEL SISTEMA ---
+
+
+def operaciones(request):
+    """
+    Muestra el menú principal de Operaciones del Sistema.
+    """
+    return render(request, "operaciones.html")
+
+
+def inicializar_sistema(request):
+    """
+    Llama al endpoint de reset en el backend.
+    """
+    if request.method == "POST":
+        try:
+            response = requests.post(API_URL + "sistema/reset")
+            if response.status_code == 200:
+                data = response.json()
+                messages.success(request, data.get("mensaje", "Sistema inicializado."))
+            else:
+                messages.error(request, f"Error del backend: {response.text}")
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"Error de conexión con el API: {e}")
+
+    return redirect("operaciones")
+
+
+def consultar_datos(request):
+    """
+    Obtiene todos los datos del backend y los muestra.
+    """
+    context = {"datos": None, "error": None}
+    try:
+        response = requests.get(API_URL + "sistema/datos")
+        if response.status_code == 200:
+            context["datos"] = response.json()
+        else:
+            context["error"] = f"Error del backend: {response.text}"
+    except requests.exceptions.RequestException as e:
+        context["error"] = f"Error de conexión con el API: {e}"
+
+    return render(request, "consultar_datos.html", context)
+
+
+def crear_datos(request):
+    """
+    Placeholder para la página de creación de datos manual.
+    """
+    return render(request, "crear_datos.html")
+
+
+def proceso_facturacion(request):
+    """
+    Placeholder para la página de proceso de facturación.
+    """
+    return render(request, "facturacion.html")
+
+
+def reportes_pdf(request):
+    """
+    Placeholder para la página de reportes PDF.
+    """
+    return render(request, "reportes.html")

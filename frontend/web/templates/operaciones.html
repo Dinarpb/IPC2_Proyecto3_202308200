@@ -1,0 +1,66 @@
+{% extends 'template.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2>Operaciones del Sistema</h2>
+            <p>Seleccione una operación para continuar.</p>
+
+            {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="list-group mt-4">
+                
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">❖ Inicializar sistema</h5>
+                    </div>
+                    <p class="mb-1">Elimina todos los datos en la base de datos (recursos, clientes, consumos) para iniciar una prueba sin datos previos.</p>
+                    <form action="{% url 'inicializar_sistema' %}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas borrar TODOS los datos? Esta acción no se puede deshacer.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger mt-2">Inicializar Sistema</button>
+                    </form>
+                </div>
+
+                <a href="{% url 'consultar_datos' %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">❖ Consultar Datos</h5>
+                    </div>
+                    <p class="mb-1">Ver las categorías, recursos, configuraciones, clientes e instancias registradas.</p>
+                </a>
+
+                <a href="{% url 'crear_datos' %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">❖ Creación de nuevos datos</h5>
+                    </div>
+                    <p class="mb-1">Crear nuevas categorías, recursos, configuraciones, clientes o registrar/cancelar instancias.</p>
+                </a>
+
+                <a href="{% url 'proceso_facturacion' %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">❖ Proceso de facturación</h5>
+                    </div>
+                    <p class="mb-1">Generar facturas para clientes en un rango de fechas.</p>
+                </a>
+
+                <a href="{% url 'reportes_pdf' %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">❖ Reportes en PDF</h5>
+                    </div>
+                    <p class="mb-1">Generar reportes de "Detalle de factura" y "Análisis de ventas".</p>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

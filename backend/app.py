@@ -5,17 +5,15 @@ import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
-# --- Almacenamiento en memoria (de la vez anterior) ---
+
 Recursos = []
 Categorias = []
 Clientes = []
+Consumos = []
+
 recursos_ids = set()
 categorias_ids = set()
 clientes_nits = set()
-
-# --- NUEVO: Almacenamiento para Consumos ---
-Consumos = []
-# Usamos un set de tuplas (nit, instancia, fecha) para identificar consumos únicos
 consumos_unicos = set()
 
 
@@ -25,7 +23,6 @@ def cargar_configuracion():
     if not file:
         return jsonify({"error": "No se proporcionó ningún archivo"}), 400
 
-    # Contadores para items *nuevos*
     nuevos_recursos = 0
     nuevas_categorias = 0
     nuevos_clientes = 0
@@ -35,7 +32,6 @@ def cargar_configuracion():
         xml_content = file.read().decode("UTF-8")
         root = ET.fromstring(xml_content)
 
-        # --- Procesar Recursos ---
         lista_recursos = root.find("listaRecursos")
         if lista_recursos is not None:
             for recurso in lista_recursos.findall("recurso"):
@@ -53,7 +49,6 @@ def cargar_configuracion():
                     recursos_ids.add(recurso_id)
                     nuevos_recursos += 1
 
-        # --- Procesar Categorías ---
         lista_categorias = root.find("listaCategorias")
         if lista_categorias is not None:
             for categoria in lista_categorias.findall("categoria"):
@@ -90,7 +85,6 @@ def cargar_configuracion():
                     categorias_ids.add(categoria_id)
                     nuevas_categorias += 1
 
-        # --- Procesar Clientes e Instancias ---
         lista_clientes = root.find("listaClientes")
         if lista_clientes is not None:
             for cliente in lista_clientes.findall("cliente"):
@@ -137,7 +131,6 @@ def cargar_configuracion():
                             existing_client["instancias"].append(nueva_instancia)
                             nuevas_instancias += 1
 
-        # Devolver el conteo de *nuevos* items
         return jsonify(
             {
                 "mensaje": "Archivo de configuración procesado",
@@ -147,13 +140,10 @@ def cargar_configuracion():
                 "nuevas_instancias": nuevas_instancias,
             }
         )
-    except ET.ParseError as e:
-        return jsonify({"error": f"XML mal formado: {e}"}), 400
     except Exception as e:
         return jsonify({"error": f"Error al procesar el archivo: {e}"}), 500
 
 
-# --- NUEVO ENDPOINT PARA CONSUMOS ---
 @app.route("/consumo", methods=["POST"])
 def cargar_consumo():
     file = request.files.get("file")
@@ -165,18 +155,15 @@ def cargar_consumo():
         xml_content = file.read().decode("UTF-8")
         root = ET.fromstring(xml_content)
 
-        # Iterar sobre cada elemento <consumo>
         for consumo in root.findall("consumo"):
             nit_cliente = consumo.get("nitCliente")
             id_instancia = consumo.get("idInstancia")
             tiempo = consumo.find("tiempo").text
             fecha_hora = consumo.find("fechaHora").text
 
-            # Clave única para identificar este consumo
             clave_unica = (nit_cliente, id_instancia, fecha_hora)
 
             if clave_unica not in consumos_unicos:
-                # Es un consumo nuevo
                 nuevo_consumo = {
                     "nitCliente": nit_cliente,
                     "idInstancia": id_instancia,
@@ -193,10 +180,43 @@ def cargar_consumo():
                 "nuevos_consumos": nuevos_consumos,
             }
         )
-    except ET.ParseError as e:
-        return jsonify({"error": f"XML mal formado: {e}"}), 400
     except Exception as e:
         return jsonify({"error": f"Error al procesar el archivo: {e}"}), 500
+
+
+@app.route("/sistema/reset", methods=["POST"])
+def inicializar_sistema():
+    """
+    Elimina todos los datos en memoria.
+    """
+    Recursos.clear()
+    Categorias.clear()
+    Clientes.clear()
+    Consumos.clear()
+
+    recursos_ids.clear()
+    categorias_ids.clear()
+    clientes_nits.clear()
+    consumos_unicos.clear()
+
+    return jsonify(
+        {"mensaje": "Sistema inicializado. Todos los datos han sido borrados."}
+    )
+
+
+@app.route("/sistema/datos", methods=["GET"])
+def consultar_datos():
+    """
+    Devuelve todos los datos actualmente en memoria.
+    """
+    return jsonify(
+        {
+            "recursos_disponibles": Recursos,
+            "categorias_disponibles": Categorias,
+            "clientes_registrados": Clientes,
+            "consumos_registrados": Consumos,
+        }
+    )
 
 
 if __name__ == "__main__":
