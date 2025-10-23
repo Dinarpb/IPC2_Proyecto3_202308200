@@ -1,0 +1,32 @@
+{% extends 'template.html' %}
+{% block content %}
+
+<div class="container text-center">
+    <div class="row" style="padding: 3%;">
+        <h1>Tecnologías Chapinas S.A.</h1>
+    </div>
+    <div class="row">
+        <div class="col" style="padding: 3%;">
+            <h3>Enviar mensaje de
+                configuración</h3>
+            <form method="POST" action="{% url 'crear_producto' %}">
+                <input class="form-control" type="file" id="configuracion"
+                    type="file" name="file"
+                    accept=".xml">
+                <button type="submit"
+                    class="btn btn-primary" style="margin: 2%;">Enviar</button>
+            </form>
+        </div>
+        <div class="col" style="padding: 3%;">
+            <h3>Enviar mensaje de
+                consumo</h3>
+            <input class="form-control" type="file" id="consumo"
+                type="file" name="file"
+                accept=".xml">
+            <button type="submit"
+                class="btn btn-primary" style="margin: 2%;">Enviar</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
