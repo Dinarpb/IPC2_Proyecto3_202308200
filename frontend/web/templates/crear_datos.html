@@ -2,9 +2,396 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Creación de Nuevos Datos</h2>
-    <a href="{% url 'operaciones' %}" class="btn btn-secondary mb-3">Volver a Operaciones</a>
-    <div class="alert alert-info" role="alert">
-        Página en construcción. Aquí irán los formularios para crear nuevas categorías, recursos, clientes, etc.
+    <a href="{% url 'operaciones' %}" class="btn btn-secondary mb-3">Volver a
+        Operaciones</a>
+
+    {% if messages %}
+    <div class="mt-3">
+        {% for message in messages %}
+        <div
+            class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}"
+            role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="recurso-tab"
+                data-bs-toggle="tab" data-bs-target="#recurso-tab-pane"
+                type="button" role="tab">Crear Recurso</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="categoria-tab" data-bs-toggle="tab"
+                data-bs-target="#categoria-tab-pane" type="button"
+                role="tab">Crear Categoría</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cliente-tab" data-bs-toggle="tab"
+                data-bs-target="#cliente-tab-pane" type="button"
+                role="tab">Crear Cliente</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="config-tab" data-bs-toggle="tab"
+                data-bs-target="#config-tab-pane" type="button" role="tab">Crear
+                Configuración</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="instancia-tab" data-bs-toggle="tab"
+                data-bs-target="#instancia-tab-pane" type="button"
+                role="tab">Registrar Instancia</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cancelar-tab" data-bs-toggle="tab"
+                data-bs-target="#cancelar-tab-pane" type="button"
+                role="tab">Cancelar Instancia</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+
+        <div class="tab-pane fade show active" id="recurso-tab-pane"
+            role="tabpanel">
+            <form class="card-body border border-top-0" method="POST"
+                action="{% url 'crear_datos' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="recurso">
+                <h5 class="card-title">Nuevo Recurso</h5>
+
+                <div class="mb-3">
+                    <label for="id_recurso" class="form-label">ID Recurso (Ej:
+                        11, 12)</label>
+                    <input type="text" class="form-control" id="id_recurso"
+                        name="id_recurso" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre"
+                        name="nombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="abreviatura"
+                        class="form-label">Abreviatura</label>
+                    <input type="text" class="form-control" id="abreviatura"
+                        name="abreviatura" required>
+                </div>
+                <div class="mb-3">
+                    <label for="metrica" class="form-label">Métrica (Ej: Gb,
+                        Núcleos)</label>
+                    <input type="text" class="form-control" id="metrica"
+                        name="metrica" required>
+                </div>
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select class="form-select" id="tipo" name="tipo" required>
+                        <option value="HARDWARE">Hardware</option>
+                        <option value="SOFTWARE">Software</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="valorXhora" class="form-label">Valor por Hora
+                        (Ej: 40, 55.5)</label>
+                    <input type="number" step="0.01" class="form-control"
+                        id="valorXhora" name="valorXhora" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Crear
+                    Recurso</button>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="categoria-tab-pane" role="tabpanel">
+            <form class="card-body border border-top-0" method="POST"
+                action="{% url 'crear_datos' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="categoria">
+                <h5 class="card-title">Nueva Categoría</h5>
+                <p class="card-text text-muted">Nota: Las configuraciones se
+                    añaden en la pestaña 'Crear Configuración'.</p>
+
+                <div class="mb-3">
+                    <label for="id_categoria" class="form-label">ID Categoría
+                        (Ej: 4, 5)</label>
+                    <input type="text" class="form-control" id="id_categoria"
+                        name="id_categoria" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre"
+                        name="nombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcion"
+                        class="form-label">Descripción</label>
+                    <input type="text" class="form-control" id="descripcion"
+                        name="descripcion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="cargaTrabajo" class="form-label">Carga de
+                        Trabajo</label>
+                    <select class="form-select" id="cargaTrabajo"
+                        name="cargaTrabajo" required>
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Crear
+                    Categoría</button>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="cliente-tab-pane" role="tabpanel">
+            <form class="card-body border border-top-0" method="POST"
+                action="{% url 'crear_datos' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="cliente">
+                <h5 class="card-title">Nuevo Cliente</h5>
+                <p class="card-text text-muted">Nota: Las instancias se
+                    registran en la pestaña 'Registrar Instancia'.</p>
+
+                <div class="mb-3">
+                    <label for="nit" class="form-label">NIT (Ej:
+                        123456-7)</label>
+                    <input type="text" class="form-control" id="nit" name="nit"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre
+                        Cliente</label>
+                    <input type="text" class="form-control" id="nombre"
+                        name="nombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="usuario" class="form-label">Usuario</label>
+                    <input type="text" class="form-control" id="usuario"
+                        name="usuario" required>
+                </div>
+                <div class="mb-3">
+                    <label for="clave" class="form-label">Clave</label>
+                    <input type="password" class="form-control" id="clave"
+                        name="clave" required>
+                </div>
+                <div class="mb-3">
+                    <label for="direccion" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="direccion"
+                        name="direccion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="correo" class="form-label">Correo
+                        Electrónico</label>
+                    <input type="email" class="form-control" id="correo"
+                        name="correo" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Crear
+                    Cliente</button>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="config-tab-pane" role="tabpanel">
+            <form class="card-body border border-top-0" method="POST"
+                action="{% url 'crear_datos' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="configuracion">
+                <h5 class="card-title">Nueva Configuración</h5>
+
+                <div class="mb-3">
+                    <label for="categoria_id" class="form-label">Asignar a
+                        Categoría</label>
+                    <select class="form-select" id="categoria_id"
+                        name="categoria_id" required>
+                        <option value>Seleccione una categoría...</option>
+                        {% if datos %}
+                        {% for categoria in datos.categorias_disponibles %}
+                        <option value="{{ categoria.id }}">{{ categoria.nombre
+                            }} (ID: {{ categoria.id }})</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="id_config" class="form-label">ID Nueva
+                        Configuración</label>
+                    <input type="text" class="form-control" id="id_config"
+                        name="id_config" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre
+                        Configuración</label>
+                    <input type="text" class="form-control" id="nombre"
+                        name="nombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcion"
+                        class="form-label">Descripción</label>
+                    <input type="text" class="form-control" id="descripcion"
+                        name="descripcion" required>
+                </div>
+                <hr>
+                <h6>Recursos (Simplificado)</h6>
+                <div class="row">
+                    <div class="col-md-8">
+                        <label for="recurso_1_id" class="form-label">Recurso
+                            1</label>
+                        <select class="form-select" id="recurso_1_id"
+                            name="recurso_1_id">
+                            <option value>Seleccione recurso...</option>
+                            {% if datos %}
+                            {% for recurso in datos.recursos_disponibles %}
+                            <option value="{{ recurso.id }}">{{ recurso.nombre
+                                }} (ID: {{ recurso.id }})</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="recurso_1_cant"
+                            class="form-label">Cantidad</label>
+                        <input type="number" class="form-control"
+                            id="recurso_1_cant" name="recurso_1_cant" value="0">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-8">
+                        <label for="recurso_2_id" class="form-label">Recurso
+                            2</label>
+                        <select class="form-select" id="recurso_2_id"
+                            name="recurso_2_id">
+                            <option value>Seleccione recurso...</option>
+                            {% if datos %}
+                            {% for recurso in datos.recursos_disponibles %}
+                            <option value="{{ recurso.id }}">{{ recurso.nombre
+                                }} (ID: {{ recurso.id }})</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="recurso_2_cant"
+                            class="form-label">Cantidad</label>
+                        <input type="number" class="form-control"
+                            id="recurso_2_cant" name="recurso_2_cant" value="0">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Crear
+                    Configuración</button>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="instancia-tab-pane" role="tabpanel">
+            <form class="card-body border border-top-0" method="POST"
+                action="{% url 'crear_datos' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="instancia">
+                <h5 class="card-title">Registrar Nueva Instancia</h5>
+
+                <div class="mb-3">
+                    <label for="cliente_nit" class="form-label">Asignar a
+                        Cliente</label>
+                    <select class="form-select" id="cliente_nit"
+                        name="cliente_nit" required>
+                        <option value>Seleccione un cliente...</option>
+                        {% if datos %}
+                        {% for cliente in datos.clientes_registrados %}
+                        <option value="{{ cliente.nit }}">{{ cliente.nombre }}
+                            (NIT: {{ cliente.nit }})</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="configuracion_id" class="form-label">Usar
+                        Configuración</label>
+                    <select class="form-select" id="configuracion_id"
+                        name="configuracion_id" required>
+                        <option value>Seleccione una configuración...</option>
+                        {% if datos %}
+                        {% for categoria in datos.categorias_disponibles %}
+                        {% for config in categoria.configuraciones %}
+                        <option value="{{ config.id }}">{{ config.nombre }} (ID:
+                            {{ config.id }}) - Categoría: {{ categoria.nombre
+                            }}</option>
+                        {% endfor %}
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="id_instancia" class="form-label">ID Nueva
+                        Instancia</label>
+                    <input type="text" class="form-control" id="id_instancia"
+                        name="id_instancia" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre de la
+                        Instancia</glabel>
+                    <input type="text" class="form-control" id="nombre"
+                        name="nombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="fechaInicio" class="form-label">Fecha de
+                        Inicio</label>
+                    <input type="date" class="form-control" id="fechaInicio"
+                        name="fechaInicio" value="{{ today_date }}" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Registrar
+                    Instancia</button>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="cancelar-tab-pane" role="tabpanel">
+            <form class="card-body border border-top-0" method="POST"
+                action="{% url 'crear_datos' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type"
+                    value="cancelar_instancia">
+                <h5 class="card-title">Cancelar Instancia Vigente</h5>
+
+                <div class="mb-3">
+                    <label for="instancia_a_cancelar"
+                        class="form-label">Instancia a Cancelar</label>
+                    <select class="form-select" id="instancia_a_cancelar"
+                        name="instancia_a_cancelar" required>
+                        <option value>Seleccione una instancia
+                            vigente...</option>
+                        {% if datos %}
+                        {% for cliente in datos.clientes_registrados %}
+                        {% for instancia in cliente.instancias %}
+                        {% if instancia.estado == "VIGENTE" %}
+                        <option value="{{ cliente.nit }}|{{ instancia.id }}">
+                            Cliente: {{ cliente.nombre }} | Instancia: {{
+                            instancia.nombre }} (ID: {{ instancia.id }})
+                        </option>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="fechaFinal" class="form-label">Fecha de
+                        Finalización</label>
+                    <input type="date" class="form-control" id="fechaFinal"
+                        name="fechaFinal" value="{{ today_date }}" required>
+                </div>
+
+                <button type="submit" class="btn btn-danger">Cancelar
+                    Instancia</button>
+            </form>
+        </div>
+
     </div>
 </div>
 {% endblock %}
